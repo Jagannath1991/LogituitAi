@@ -7,6 +7,8 @@ import image3 from "../../assets/02_10.jpg"
 import arrow from "../../assets/arrow_forward.png"
 import rigthImage from '../../assets/Group 3.png'
 import RemoveBackground from './RemoveBackground';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Loader from '../../componets/Loader';
 import axios from "axios";
 
 const sourceUrl2="https://d21ksh0k4smeql.cloudfront.net/crop_1695201165222-7514-0-1695201165485-8149.png"
@@ -20,8 +22,9 @@ const SwapImagePage = () => {
   const [targetedPhoto, setTargetedPhoto] = useState(null);
   const [apiResponse, setApiResponse] = useState(null);
   const [downloadedImageUrl, setDownloadedImageUrl] = useState(null);
-  
- console.log("targeted Photo",targetedPhoto);
+  const [loader,setLoder]=useState(false)
+ 
+  console.log("targeted Photo",targetedPhoto);
   console.log("upload",uploadedPhoto);
   console.log("resoult Photo",apiResponse);
 
@@ -115,6 +118,7 @@ const SwapImagePage = () => {
   
 
   const handleApiRequest = async () => {
+    setLoder(true)
     const options = {
       method: "POST",
       url: "https://faceswap-image-transformation-api.p.rapidapi.com/faceswap",
@@ -139,6 +143,8 @@ const SwapImagePage = () => {
       setDownloadedImageUrl(response?.data?.ResultImageUrl);
     } catch (error) {
       console.error("API Error:", error);
+    }finally{
+      setLoder(false)
     }
   };
 
@@ -169,7 +175,7 @@ const SwapImagePage = () => {
                     width: "160px", height: "160px", borderRadius: "8px",marginLeft: "2.375rem" 
                   }}>
               
-                  <img  src={uploadedPhoto} style={{width: "160px", height: "160px", borderRadius: "8px"}}/>
+                  <img  src={uploadedPhoto} style={{width: "100%", height: "160px", borderRadius: "8px",objectFit: "cover"}}/>
                   </Paper> ):
                   (<Paper sx={{
                   width: "220px", height: "140px", borderRadius: "8px",
@@ -224,7 +230,7 @@ const SwapImagePage = () => {
                   width: "160px", height: "160px", borderRadius: "8px",marginLeft:"12%"
                 }}>
             
-                <img  src={targetedPhoto} style={{width: "160px", height: "160px", borderRadius: "8px"}}/>
+                <img  src={targetedPhoto} style={{width: "100%", height: "160px", borderRadius: "8px",objectFit: "cover"}}/>
                 </Paper>):
                 (<Paper sx={{
                   width: "220px", height: "140px", borderRadius: "8px",
@@ -271,31 +277,47 @@ const SwapImagePage = () => {
           </Grid>
 
         </Grid>
-        {
-          apiResponse ?
-          (
+        <Grid>
+      {/* Loader */}
+      {loader && 
+      
+      <Loader />
+      
+      }
+
+      {/* Image Display Section */}
+      {!loader && (
+        <Grid style={{marginLeft:"12rem"}} >
+          {/* If API response is available, display the generated image */}
+          {apiResponse ? (
             <Grid>
-            <Grid sx={{ width: "280px", height: "280px", borderRadius: "16px", marginTop: "10%", marginLeft: "30%" }}>
-              <img src={apiResponse} style={{ width: "280px", height: "280px", borderRadius: "16px" }} />
+              <Grid sx={{ width: "280px", height: "280px", borderRadius: "16px", marginTop: "10%"}}>
+                <img src={apiResponse} alt="API Response" style={{ width: "280px", height: "280px", borderRadius: "16px" ,marginLeft:"3.5rem"}} />
+              </Grid>
+              <Box sx={{ width: "420px", height: "40px", textAlign: "center", mt: 4 }}>
+                <Button variant="contained" color="primary" sx={{ borderRadius: "8px", backgroundColor: "#F53689", width: "200px", marginRight: '10px' }} onClick={handleDownloadClick}>
+                  <Typography sx={{ fontWeight: "700", fontFamily: "Open Sans", fontSize: "14px" }}>Download</Typography>
+                </Button>
+                <Button variant='contained' color='primary' sx={{ borderRadius: "8px", backgroundColor: "rgba(124, 97, 254, 1)", width: "200px" }}>
+                  <Typography sx={{ fontWeight: "700", fontFamily: "Open Sans", fontSize: "14px" }}>Share</Typography>
+                </Button>
+              </Box>
             </Grid>
-            <Box sx={{ width: "420px", height: "40px", textAlign: "center", mt: 4,ml:10 }}>
-              <Button variant="contained" color="primary" sx={{ borderRadius: "8px", backgroundColor: "#F53689", width: "200px", marginRight: '10px' }} onClick={handleDownloadClick}>
-                <Typography sx={{ fontWeight: "700", fontFamily: "Open Sans", fontSize: "14px" }}>Download</Typography>
-              </Button>
-              <Button variant='contained' color='primary' sx={{ borderRadius: "8px", backgroundColor: "rgba(124, 97, 254, 1)", width: "200px" }}>
-                <Typography sx={{ fontWeight: "700", fontFamily: "Open Sans", fontSize: "14px" }}>Share</Typography>
-              </Button>
-            </Box>
-          </Grid>
-        ):(<Grid sx={{width:"364px",height:"260px",borderRadius:"16px",marginTop: "3%",marginLeft:"5%"}}>
-        <img src={rigthImage} style={{width:"364px",height:"260px"}}/>
-        <Box sx={{width:"318px",height:"40px",textAlign:"center",mt:"10px"}}>
-        <Typography sx={{color:"rgba(250,250,250,1)",fontWeight:"700",fontFamily:"Open Sans",fontSize:"14px"}}>Dive into the magic of instant transformations with our cutting-edge face swap feature.</Typography>
-        </Box>
-      </Grid>)
-        }
+          ) : (
+            // If API response is not available, display default right image
+            <Grid sx={{ width: "364px", height: "260px", borderRadius: "16px", marginTop: "3%", marginLeft: "5%" }}>
+              <img src={rigthImage} alt="Right Image" style={{ width: "364px", height: "260px" }} />
+              <Box sx={{ width: "318px", height: "40px", textAlign: "center", mt: "10px" }}>
+                <Typography sx={{ color: "rgba(250,250,250,1)", fontWeight: "700", fontFamily: "Open Sans", fontSize: "14px" }}>
+                  Dive into the magic of instant transformations with our cutting-edge face swap feature.
+                </Typography>
+              </Box>
+            </Grid>
+          )}
+        </Grid>
+      )}
+    </Grid>
       </Grid>
-     
 
     </Box>
   );

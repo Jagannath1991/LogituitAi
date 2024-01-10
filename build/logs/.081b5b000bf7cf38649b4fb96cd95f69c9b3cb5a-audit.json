@@ -1,0 +1,14 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/cepl/Desktop/Logituit/swapimage/build/logs/.081b5b000bf7cf38649b4fb96cd95f69c9b3cb5a-audit.json",
+    "files": [
+        {
+            "date": 1704798737553,
+            "name": "/Users/cepl/Desktop/Logituit/swapimage/build/logs/keplerCliNative-2024-01-09.log",
+            "hash": "1315981a4c116d08931b00a70ddbf4e7"
+        }
+    ]
+}

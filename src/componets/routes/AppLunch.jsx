@@ -10,7 +10,7 @@ import RemoveBackground from '../../pages/swapimagepage/RemoveBackground';
 export default function AppLunch() {
   return (
     <Router>
-      <Stack sx={{backgroundColor:"#0D0B25"}}> 
+      <Stack sx={{backgroundColor:"#edebfe"}}> 
         <Navbar  /> 
         <Routes>
           <Route path="/" element={<SwapImagePage />} />

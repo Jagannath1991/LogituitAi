@@ -33,7 +33,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const pathname = location.pathname;
+    const pathname = location.pathname === '/' ? '/face-swap' : location.pathname;
     setActiveMenuItem(pathname);
   }, [location.pathname]);
 
