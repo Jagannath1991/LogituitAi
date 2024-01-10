@@ -23,6 +23,7 @@ const SwapImagePage = () => {
   const [apiResponse, setApiResponse] = useState(null);
   const [downloadedImageUrl, setDownloadedImageUrl] = useState(null);
   const [loader,setLoder]=useState(false)
+  const [addLoader,setAddLoader]=useState(false)
  
   console.log("targeted Photo",targetedPhoto);
   console.log("upload",uploadedPhoto);
@@ -57,6 +58,7 @@ const SwapImagePage = () => {
   // };
 
   const handleUploadLocalPhoto = (event) => {
+    setAddLoader(true)
     const file = event.target.files[0];
     console.log(file);
     if (file) {
@@ -73,12 +75,15 @@ const SwapImagePage = () => {
         })
         .catch((error) => {
           console.error("Upload error:", error);
+        }).finally(() => {
+          setAddLoader(false);
         });
     }
   };
   
  console.log("after",uploadedPhoto);
   const handleUplodTagetedPhoto = (event) => {
+    setAddLoader(true)
     const file = event.target.files[0];
     if (file) {
       console.log("Enter");
@@ -94,6 +99,8 @@ const SwapImagePage = () => {
         })
         .catch((error) => {
           console.error("Upload error:", error);
+        }).finally(() => {
+          setAddLoader(false);
         });
     }
   };
@@ -283,6 +290,10 @@ const SwapImagePage = () => {
       
       <Loader />
       
+      }
+      {
+        addLoader &&
+        <Loader/>
       }
 
       {/* Image Display Section */}
