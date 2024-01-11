@@ -10,13 +10,15 @@ import RemoveBackground from './RemoveBackground';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Loader from '../../componets/Loader';
 import axios from "axios";
-
+import ApiPopUp from '../../componets/ApiPopUp';
 const sourceUrl2="https://d21ksh0k4smeql.cloudfront.net/crop_1695201165222-7514-0-1695201165485-8149.png"
 const souceUrl3="https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcT2xYTv3ig7zGLvs0ABliV1ZMWG-0waOX_P6nd03SJnDLVoTiSnvuCMJ-dNpQhhYXTC"
 const imageUrl2="https://res.cloudinary.com/deb14t8r9/image/upload/v1704702965/khglsmr9bklmdymcpa0j.jpg"
 const imageUrl1="https://d21ksh0k4smeql.cloudfront.net/crop_1695201103793-0234-0-1695201106985-2306.png"
 const imageUrl3="https://res.cloudinary.com/deb14t8r9/image/upload/v1704702938/a7q5he40mdshwtryrxzq.jpg"
 const sourceUrl1="https://m.media-amazon.com/images/M/MV5BMTQzMjkwNTQ2OF5BMl5BanBnXkFtZTgwNTQ4MTQ4MTE@._V1_.jpg"
+const apiKeys = ["ac68d9880emshfe97e0939f29aeap166e4djsnc07589516ad0", "8eaec025b2msh68b4d59cf265963p16acddjsn90db26d36d0a", "780eb39aacmsh11fb1e28e8b4a25p14f3d0jsn14f7cd1052c3","35f7ac16e0msh6ee444c8be595a7p160a04jsn1173230588ab"];
+
 const SwapImagePage = () => {
   const [uploadedPhoto, setUploadedPhoto] = useState(null);
   const [targetedPhoto, setTargetedPhoto] = useState(null);
@@ -24,7 +26,13 @@ const SwapImagePage = () => {
   const [downloadedImageUrl, setDownloadedImageUrl] = useState(null);
   const [loader,setLoder]=useState(false)
   const [addLoader,setAddLoader]=useState(false)
- 
+  const [apiMessage, setApiMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [apiHitCount, setApiHitCount] = useState(0);
+  const [currentApiKeyIndex, setCurrentApiKeyIndex] = useState(0);
+  const [count,setCount]=useState(2)
+
+ console.log("Api count",apiHitCount);
   console.log("targeted Photo",targetedPhoto);
   console.log("upload",uploadedPhoto);
   console.log("resoult Photo",apiResponse);
@@ -125,13 +133,24 @@ const SwapImagePage = () => {
   
 
   const handleApiRequest = async () => {
+
     setLoder(true)
+    if (apiHitCount >= 20) {
+      setCurrentApiKeyIndex((prevIndex) => (prevIndex + 1) % apiKeys.length);
+      setApiHitCount(0);
+    }
+    if(count===75){
+      setApiMessage(`Your total hit count of the day reached ${count} `);
+      setIsModalOpen(true);
+    }
+    const currentApiKey = apiKeys[currentApiKeyIndex];
+    console.log("API KEY",currentApiKey);
     const options = {
       method: "POST",
       url: "https://faceswap-image-transformation-api.p.rapidapi.com/faceswap",
       headers: {
         "content-type": "application/json",
-        "X-RapidAPI-Key": "91c37c4948msh7b3dfe8749542b3p172ac9jsn368020351e15",
+        "X-RapidAPI-Key":currentApiKey,
         "X-RapidAPI-Host": "faceswap-image-transformation-api.p.rapidapi.com",
       },
       data: {
@@ -148,12 +167,21 @@ const SwapImagePage = () => {
       // const imageUrl = URL.createObjectURL(blob);
       setApiResponse(response?.data?.ResultImageUrl);
       setDownloadedImageUrl(response?.data?.ResultImageUrl);
+      setApiHitCount((count) => count + 1);
+      setCount((count)=>count+1);
     } catch (error) {
       console.error("API Error:", error);
+      setApiMessage("something went wrong.Please try again after some time.");
+      setIsModalOpen(true);
     }finally{
       setLoder(false)
     }
   };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
 
 
   return (
@@ -329,7 +357,12 @@ const SwapImagePage = () => {
       )}
     </Grid>
       </Grid>
+<ApiPopUp
+open={isModalOpen}
+onClose={handleCloseModal}
+message={apiMessage}
 
+/>
     </Box>
   );
 };

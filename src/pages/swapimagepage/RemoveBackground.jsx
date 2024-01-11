@@ -6,11 +6,20 @@ import image2 from '../../assets/image 5.png'
 import axios from 'axios';
 import Loader from '../../componets/Loader';
 import { center } from '@cloudinary/url-gen/qualifiers/textAlignment';
+import ApiPopUp from '../../componets/ApiPopUp';
 
+const apiKeys=["ZZsfihMwgeDuiRNxMAjrqEce","EXqBSS5RVs87Wege3b4X16GH"]
 export default function RemoveBackground() {
   const [inputImage, setInputImage] = useState(null);
   const [outputImage, setOutputImage] = useState(null);
   const [downloadedImageUrl, setDownloadedImageUrl] = useState(null);
+  const [apiHitCount, setApiHitCount] = useState(0);
+  const [currentApiKeyIndex, setCurrentApiKeyIndex] = useState(0);
+  const [apiMessage, setApiMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [count,setCount]=useState(0)
+ 
+  
  const [loader,setLoader]=useState(false)
   const handleUploadLocalPhoto = (event) => {
     const file = event.target.files[0];
@@ -31,6 +40,15 @@ export default function RemoveBackground() {
 
   const handleRemoveBackground = async () => {
     setLoader(true)
+    if (apiHitCount >= 45) {
+      setCurrentApiKeyIndex((prevIndex) => (prevIndex + 1) % apiKeys.length);
+      setApiHitCount(0);
+    }
+     if(count === 80) {
+      setApiMessage(`Your total hit count of the day reached ${count} `);
+      setIsModalOpen(true);
+    }
+    const currentApiKey = apiKeys[currentApiKeyIndex];
     if (!inputImage) {
       console.error('Please select an image');
       return;
@@ -46,7 +64,7 @@ export default function RemoveBackground() {
         formData,
         {
           headers: {
-            'X-Api-Key': 'EXqBSS5RVs87Wege3b4X16GH',
+            'X-Api-Key': currentApiKey,
             'Content-Type': 'multipart/form-data',
           },
           responseType: 'arraybuffer',
@@ -59,15 +77,27 @@ export default function RemoveBackground() {
         const imageUrl = URL.createObjectURL(blob);
         setOutputImage(imageUrl);
         setDownloadedImageUrl(imageUrl);
+        setApiHitCount((count) => count + 1);
+        setCount((count)=>count+1);
+        
       } else {
         console.error('Error:', response.status, response.statusText);
+        
       }
     } catch (error) {
       console.error('Request failed:', error);
+        setApiHitCount((count) => count + 1);
+        setApiMessage("something went wrong.Please try again after some time.");
+        setIsModalOpen(true);
     }finally{
         setLoader(false)
     }
   };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  
+ 
 
   return (
     <Box sx={{ backgroundColor: '#0D0B25', height: '100vh' ,width:"100%"}}>
@@ -206,6 +236,12 @@ export default function RemoveBackground() {
    
       </Grid>
       {/* </Grid> */}
+      <ApiPopUp
+open={isModalOpen}
+onClose={handleCloseModal}
+message={apiMessage}
+
+/>
     </Box>
   );
 }
